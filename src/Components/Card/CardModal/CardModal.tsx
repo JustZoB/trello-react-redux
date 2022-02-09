@@ -10,6 +10,8 @@ import { AddDescriptionButton } from './AddDescriptionButton';
 import { DescriptionContent } from './DescriptionContent';
 import { CommentsContent } from './CommentsContent';
 import { CommentType } from '../../../interfaces';
+import { useDispatch } from 'react-redux';
+import { cardDelete, cardDescriptionEdit, cardNameEdit, commentAdd } from '../../../features/board/boardSlice';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
@@ -20,14 +22,8 @@ export const CardModal: React.FC<CardModalProps> = ({
     name,
     description,
     comments,
-    userName,
-    onChangeCardName,
-    deleteCard,
-    changeDescriptionCard,
-    addComment,
-    editComment,
-    deleteComment
   }) => {
+  const dispatch = useDispatch();
   const [descriptionActive, setDescriptionActive] = useState<boolean>(false);
   const [newDescription, setNewDescription] = useState<string>(description !== undefined ? description : '');
   const [oldDescription, setOldDescription] = useState<string>(description !== undefined ? description : '');
@@ -45,6 +41,7 @@ export const CardModal: React.FC<CardModalProps> = ({
       e.preventDefault();
       handleClickCloseModal()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -61,7 +58,7 @@ export const CardModal: React.FC<CardModalProps> = ({
   }
 
   const handleClickSaveDescription = () => {
-    changeDescriptionCard(columnId, cardId, newDescription)
+    dispatch(cardDescriptionEdit({columnId, cardId, description: newDescription}))
     setNewDescription(newDescription)
     setDescriptionActive(false)
   }
@@ -69,9 +66,7 @@ export const CardModal: React.FC<CardModalProps> = ({
   const handleKeywordSaveDescription = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      changeDescriptionCard(columnId, cardId, newDescription)
-      setNewDescription(newDescription)
-      setDescriptionActive(false)
+      handleClickSaveDescription()
     }
   }
 
@@ -81,20 +76,19 @@ export const CardModal: React.FC<CardModalProps> = ({
   }
 
   const handleClickDeleteCard = () => {
-    deleteCard(columnId, cardId)
+    dispatch(cardDelete({columnId, cardId}))
     setDescriptionActive(false)
   }
 
   const handleClickAddComment = () => {
-    addComment(columnId, cardId, commentText);
+    dispatch(commentAdd({columnId, cardId, commentText}))
     setCommentText('')
   }
 
   const handleKeywordAddComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addComment(columnId, cardId, commentText);
-      setCommentText('')
+      handleClickAddComment()
     }
   }
 
@@ -113,7 +107,7 @@ export const CardModal: React.FC<CardModalProps> = ({
       <Header>
         <TextareaHead
           value={name}
-          onChange={e => onChangeCardName(e.target.value)}
+          onChange={e => dispatch(cardNameEdit({columnId, cardId, newName: e.target.value}))}
           onKeyPress={handleKeyPressBlurCardName}
           textareaRef={cardNameRef}
         >
@@ -173,9 +167,6 @@ export const CardModal: React.FC<CardModalProps> = ({
           columnId={columnId}
           cardId={cardId}
           comments={comments}
-          userName={userName}
-          editComment={editComment}
-          deleteComment={deleteComment}
         />
       </Comments>
 
@@ -199,6 +190,7 @@ const Header = styled.div`
     margin-left: 10px;
   }
 `
+
 const Description = styled.div`
   padding: 10px;
 
@@ -247,11 +239,4 @@ interface CardModalProps {
   name: string,
   description?: string,
   comments?: CommentType[],
-  userName: string,
-  onChangeCardName: (cardName: string) => void,
-  deleteCard: (columnId: number, cardId: number) => void,
-  changeDescriptionCard: (columnId: number, cardId: number, descriptionCard: string) => void,
-  addComment: (columnId: number, cardId: number, commentText: string) => void,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

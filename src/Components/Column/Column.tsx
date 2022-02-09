@@ -1,23 +1,18 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 import { Card } from '../Card';
 import { AddCardButton } from './AddCardButton';
 import { TextareaHead } from '../Textarea';
 import { CardType } from '../../interfaces';
+import { columnNameEdit } from '../../features/board/boardSlice';
+import { useDispatch } from 'react-redux';
 
 export const Column: React.FC<Props> = ({
   columnId,
-  name,
+  name: columnName,
   cards,
-  userName,
-  addCard,
-  deleteCard,
-  changeDescriptionCard,
-  addComment,
-  editComment,
-  deleteComment
 }) => {
-  const [columnName, setColumnName] = useState<string>(name);
+  const dispatch = useDispatch();
   const columnNameRef = useRef<HTMLTextAreaElement>(null)
 
   const handleKeyPressBlurColumnName = (e: React.KeyboardEvent<HTMLTextAreaElement | null>) => {
@@ -31,11 +26,11 @@ export const Column: React.FC<Props> = ({
     <StyledColumn>
       <TextareaHead
         value={columnName}
-        onChange={e => setColumnName(e.target.value)}
+        onChange={e => dispatch(columnNameEdit({columnId, newColumnName: e.target.value}))}
         onKeyPress={handleKeyPressBlurColumnName}
         textareaRef={columnNameRef}
       >
-        {name}
+        {columnName}
       </TextareaHead>
 
       {cards &&
@@ -49,18 +44,12 @@ export const Column: React.FC<Props> = ({
               description={description}
               comments={comments}
               colName={columnName}
-              userName={userName}
-              deleteCard={deleteCard}
-              changeDescriptionCard={changeDescriptionCard}
-              addComment={addComment}
-              editComment={editComment}
-              deleteComment={deleteComment}
             />
           ))}
         </CardList>
       }
 
-      <AddCardButton columnId={columnId} addCard={addCard} />
+      <AddCardButton columnId={columnId} />
     </StyledColumn>
   );
 }
@@ -113,11 +102,4 @@ interface Props {
   columnId: number,
   name: string,
   cards?: CardType[],
-  userName: string,
-  addCard: (columnId: number, cardName: string) => void,
-  deleteCard: (columnId: number, cardId: number) => void,
-  changeDescriptionCard: (columnId: number, cardId: number, descriptionCard: string) => void,
-  addComment: (columnId: number, cardId: number, commentText: string) => void,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

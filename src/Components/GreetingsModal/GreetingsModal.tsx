@@ -4,20 +4,25 @@ import { TextInput } from '../TextInput';
 import { Button } from '../Button/Button';
 import { Modal } from '../Modal';
 import { Form } from '../Form/Form';
+import { useDispatch } from 'react-redux';
+import { userNameSet } from '../../features/board/boardSlice';
 
-export const GreetingsModal: React.FC<Props> = ({onSubmit}) => {
+export const GreetingsModal: React.FC = () => {
+  const dispatch = useDispatch();
   const [modalActive, setModalActive] = useState<boolean>(true);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const userName = e.currentTarget.userName.value
     e.preventDefault();
-    onSubmit(e.currentTarget.userName.value)
+    dispatch(userNameSet({userName}))
     setModalActive(false)
   }
 
   const handleKeywordEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      const userName = e.currentTarget.value
       e.preventDefault();
-      onSubmit(e.currentTarget.value)
+      dispatch(userNameSet({userName}))
       setModalActive(false)
     }
   }
@@ -37,8 +42,4 @@ export const GreetingsModal: React.FC<Props> = ({onSubmit}) => {
       </Form>
     </Modal>
   );
-}
-
-interface Props {
-  onSubmit: (name: string) => void,
 }

@@ -4,21 +4,24 @@ import { StyledCard } from '../../StyledCard';
 import { Button, ButtonsWrapper } from '../../Button/Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
+import { useDispatch } from 'react-redux';
+import { cardAdd } from '../../../features/board/boardSlice';
 
-export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId, addCard}) => {
+export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId}) => {
+  const dispatch = useDispatch();
   const [cardAddingActive, setCardAddingActive] = useState<boolean>(false);
-  const [newCardName, setNewCardName] = useState<string>('');
+  const [cardName, setCardName] = useState<string>('');
 
   const handleClickAddCard = () => {
-    if (newCardName !== '') {
-      addCard(columnId, newCardName)
-      setNewCardName('')
+    if (cardName !== '') {
+      dispatch(cardAdd({columnId, cardName}))
+      setCardName('')
     }
   }
 
   const handleClickCloseAdding = () => {
     setCardAddingActive(false)
-    setNewCardName('')
+    setCardName('')
   }
 
   return (
@@ -36,8 +39,8 @@ export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId, addCard})
         <AddingCardWrapper>
           <Textarea
             placeholder='Name your card'
-            value={newCardName}
-            onChange={e => setNewCardName(e.target.value)}
+            value={cardName}
+            onChange={e => setCardName(e.target.value)}
             autoFocus={true}
           />
           <ButtonsWrapper>
@@ -63,5 +66,4 @@ const AddingCardWrapper = styled.div`
 
 interface AddCardButtonProps {
   columnId: number,
-  addCard: (columnId: number, name: string) => void,
 }

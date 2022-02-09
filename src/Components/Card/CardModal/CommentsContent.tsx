@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { CommentType } from '../../../interfaces';
 import { Comment } from './Comment'
 
-export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments, userName, editComment, deleteComment}) => {
+export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments}) => {
   return (
     <>
     {comments &&
@@ -17,9 +17,6 @@ export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments, us
               commentId={id}
               commentAuthor={author}
               commentText={content}
-              userName={userName}
-              editComment={editComment}
-              deleteComment={deleteComment}
             />
           </StyledComment>
         ))}
@@ -58,7 +55,4 @@ interface Props {
   columnId: number,
   cardId: number,
   comments?: CommentType[],
-  userName: string,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }
