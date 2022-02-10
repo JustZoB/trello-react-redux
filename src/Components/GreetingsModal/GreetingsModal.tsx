@@ -4,25 +4,27 @@ import { TextInput } from '../TextInput';
 import { Button } from '../Button/Button';
 import { Modal } from '../Modal';
 import { Form } from '../Form/Form';
-import { useDispatch } from 'react-redux';
-import { userNameSet } from '../../features/board/boardSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { userNameSet } from '../../features/user/userSlice';
+import { RootState } from '../../app/store';
 
 export const GreetingsModal: React.FC = () => {
   const dispatch = useDispatch();
-  const [modalActive, setModalActive] = useState<boolean>(true);
+  const userName = useSelector( (state: RootState) => state.user.userName)
+  const [modalActive, setModalActive] = useState<boolean>(userName === '');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    const userName = e.currentTarget.userName.value
+    const newUserName = e.currentTarget.userName.value
     e.preventDefault();
-    dispatch(userNameSet({userName}))
+    dispatch(userNameSet({userName: newUserName}))
     setModalActive(false)
   }
 
   const handleKeywordEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const userName = e.currentTarget.value
+      const newUserName = e.currentTarget.value
       e.preventDefault();
-      dispatch(userNameSet({userName}))
+      dispatch(userNameSet({userName: newUserName}))
       setModalActive(false)
     }
   }

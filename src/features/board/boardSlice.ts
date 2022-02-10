@@ -56,7 +56,6 @@ const boardSlice = createSlice({
         "name": "Done"
       }
     ],
-    userName: '',
   },
   reducers: {
     columnNameEdit(state, action) {
@@ -128,7 +127,7 @@ const boardSlice = createSlice({
     commentAdd(state, action) {
       const newComment = {
         id: Number(Date.now()),
-        author: state.userName,
+        author: action.payload.userName,
         content: action.payload.commentText,
       }
   
@@ -190,12 +189,9 @@ const boardSlice = createSlice({
         return column
       })
     },
-    userNameSet(state, action) {
-      state.userName = action.payload.userName
-    }
   }
 });
 
-export const { columnNameEdit, cardAdd, cardDelete, cardNameEdit, cardDescriptionEdit, commentAdd, commentDelete, commentEdit, userNameSet } = boardSlice.actions;
+export const { columnNameEdit, cardAdd, cardDelete, cardNameEdit, cardDescriptionEdit, commentAdd, commentDelete, commentEdit } = boardSlice.actions;
 
 export default boardSlice.reducer;

@@ -10,8 +10,9 @@ import { AddDescriptionButton } from './AddDescriptionButton';
 import { DescriptionContent } from './DescriptionContent';
 import { CommentsContent } from './CommentsContent';
 import { CommentType } from '../../../interfaces';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cardDelete, cardDescriptionEdit, cardNameEdit, commentAdd } from '../../../features/board/boardSlice';
+import { RootState } from '../../../app/store';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
@@ -24,6 +25,7 @@ export const CardModal: React.FC<CardModalProps> = ({
     comments,
   }) => {
   const dispatch = useDispatch();
+  const userName = useSelector( (state: RootState) => state.user.userName)
   const [descriptionActive, setDescriptionActive] = useState<boolean>(false);
   const [newDescription, setNewDescription] = useState<string>(description !== undefined ? description : '');
   const [oldDescription, setOldDescription] = useState<string>(description !== undefined ? description : '');
@@ -81,7 +83,7 @@ export const CardModal: React.FC<CardModalProps> = ({
   }
 
   const handleClickAddComment = () => {
-    dispatch(commentAdd({columnId, cardId, commentText}))
+    dispatch(commentAdd({columnId, cardId, commentText, userName}))
     setCommentText('')
   }
 

@@ -9,7 +9,7 @@ import { Textarea } from '../../Textarea';
 
 export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentText, commentAuthor}) => {
   const dispatch = useDispatch();
-  const userName = useSelector( (state: RootState) => state.board.userName)
+  const userName = useSelector( (state: RootState) => state.user.userName)
   const [editingCommentActive, setEditingCommentActive] = useState<boolean>(false);
   const [newCommentContent, setNewCommentContent] = useState<string>(commentText !== undefined ? commentText : '');
   const [oldCommentContent, setOldCommentContent] = useState<string>(commentText !== undefined ? commentText : '');
