@@ -16,7 +16,7 @@ import { RootState } from '../../../app/store';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
-    setActive,
+    setActive: modalActive,
     cardId,
     columnId,
     colName,
@@ -26,16 +26,26 @@ export const CardModal: React.FC<CardModalProps> = ({
   }) => {
   const dispatch = useDispatch();
   const userName = useSelector( (state: RootState) => state.user.userName)
-  const [descriptionActive, setDescriptionActive] = useState<boolean>(false);
-  const [newDescription, setNewDescription] = useState<string>(description !== undefined ? description : '');
-  const [oldDescription, setOldDescription] = useState<string>(description !== undefined ? description : '');
-  const [commentText, setCommentText] = useState<string>('');
   const cardNameRef = useRef<HTMLTextAreaElement>(null)
 
+  const [state, setState] = useState<{
+    descriptionEditMode: boolean,
+    newDescription: string,
+    prevDescription: string,
+    commentContent: string
+  }>(
+    {
+      descriptionEditMode: false,
+      newDescription: description !== undefined ? description : '',
+      prevDescription: description !== undefined ? description : '',
+      commentContent: '',
+    }
+  );
+
   const handleClickCloseModal = () => {
-    setNewDescription(oldDescription)
-    setDescriptionActive(false)
-    setActive(false)
+    setState({ ...state, prevDescription: state.newDescription})
+    setState({ ...state, descriptionEditMode: false})
+    modalActive(false)
   }
 
   const handleKeyPressEscapeCloseModal = useCallback((e: KeyboardEvent) => {
@@ -55,14 +65,14 @@ export const CardModal: React.FC<CardModalProps> = ({
   }, [handleKeyPressEscapeCloseModal])
 
   const handleClickOpenAddingDescription = () => {
-    setOldDescription(newDescription)
-    setDescriptionActive(true)
+    setState({ ...state, prevDescription: state.newDescription})
+    setState({ ...state, descriptionEditMode: true})
   }
 
   const handleClickSaveDescription = () => {
-    dispatch(cardDescriptionEdit({columnId, cardId, description: newDescription}))
-    setNewDescription(newDescription)
-    setDescriptionActive(false)
+    dispatch(cardDescriptionEdit({columnId, cardId, description: state.newDescription}))
+    setState({ ...state, newDescription: state.newDescription})
+    setState({ ...state, descriptionEditMode: false})
   }
 
   const handleKeywordSaveDescription = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -73,18 +83,18 @@ export const CardModal: React.FC<CardModalProps> = ({
   }
 
   const handleClickDontSaveDescription = () => {
-    setNewDescription(oldDescription)
-    setDescriptionActive(false)
+    setState({ ...state, newDescription: state.prevDescription})
+    setState({ ...state, descriptionEditMode: false})
   }
 
   const handleClickDeleteCard = () => {
     dispatch(cardDelete({columnId, cardId}))
-    setDescriptionActive(false)
+    setState({ ...state, descriptionEditMode: false})
   }
 
   const handleClickAddComment = () => {
-    dispatch(commentAdd({columnId, cardId, commentText, userName}))
-    setCommentText('')
+    dispatch(commentAdd({columnId, cardId, commentText: state.commentContent, userName}))
+    setState({ ...state, commentContent: ''})
   }
 
   const handleKeywordAddComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -104,7 +114,7 @@ export const CardModal: React.FC<CardModalProps> = ({
   return (
     <Modal
       $isActive={active}
-      onClick={() => setActive(false)}
+      onClick={() => modalActive(false)}
     >
       <Header>
         <TextareaHead
@@ -121,26 +131,26 @@ export const CardModal: React.FC<CardModalProps> = ({
       <Description>
         <h4>Description</h4>
 
-        {newDescription && !descriptionActive &&
+        {state.newDescription && !state.descriptionEditMode &&
           <DescriptionContent
-            description={newDescription}
+            description={state.newDescription}
             onClick={handleClickOpenAddingDescription}
           />
         }
 
-        {!newDescription && !descriptionActive &&
+        {!state.newDescription && !state.descriptionEditMode &&
           <AddDescriptionButton
-            description={newDescription}
+            description={state.newDescription}
             onClick={handleClickOpenAddingDescription}
           />
         }
 
-        {descriptionActive &&
+        {state.descriptionEditMode &&
           <AddDescriptionWrapper>
             <Textarea
               placeholder='Add description...'
-              value={newDescription}
-              onChange={e => setNewDescription(e.target.value)}
+              value={state.newDescription}
+              onChange={e => setState({ ...state, newDescription: e.target.value})}
               onKeyPress={handleKeywordSaveDescription}
               autoFocus={true}
               onFocus={e => e.currentTarget.select()}
@@ -159,8 +169,8 @@ export const CardModal: React.FC<CardModalProps> = ({
         <AddCommentWrapper>
           <Textarea
             placeholder='Write comment...'
-            value={commentText}
-            onChange={e => setCommentText(e.target.value)}
+            value={state.commentContent}
+            onChange={e => setState({ ...state, commentContent: e.target.value})}
             onKeyPress={handleKeywordAddComment}
           />
           <Button label='Post' onClick={handleClickAddComment} />

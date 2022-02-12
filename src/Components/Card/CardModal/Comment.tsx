@@ -7,22 +7,31 @@ import { Button, ButtonsWrapper } from '../../Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 
-export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentText, commentAuthor}) => {
+export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentContent, commentAuthor}) => {
   const dispatch = useDispatch();
   const userName = useSelector( (state: RootState) => state.user.userName)
-  const [editingCommentActive, setEditingCommentActive] = useState<boolean>(false);
-  const [newCommentContent, setNewCommentContent] = useState<string>(commentText !== undefined ? commentText : '');
-  const [oldCommentContent, setOldCommentContent] = useState<string>(commentText !== undefined ? commentText : '');
+
+  const [state, setState] = useState<{
+    commentEditMode: boolean,
+    newCommentContent: string,
+    prevCommentContent: string,
+  }>(
+    {
+      commentEditMode: false,
+      newCommentContent: commentContent !== undefined ? commentContent : '',
+      prevCommentContent: commentContent !== undefined ? commentContent : '',
+    }
+  );
 
   const handleClickEditComment = () => {
-    setOldCommentContent(newCommentContent)
-    setEditingCommentActive(true)
+    setState({ ...state, prevCommentContent: state.newCommentContent})
+    setState({ ...state, commentEditMode: true})
   }
 
   const handleClickSaveEditingComment = () => {
-    dispatch(commentEdit({columnId, cardId, commentId, newCommentContent}))
-    setNewCommentContent(newCommentContent)
-    setEditingCommentActive(false)
+    dispatch(commentEdit({columnId, cardId, commentId, newCommentContent: state.newCommentContent}))
+    setState({ ...state, newCommentContent: state.newCommentContent})
+    setState({ ...state, commentEditMode: false})
   }
 
   const handleKeywordSaveEditingComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -33,8 +42,8 @@ export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentTe
   }
 
   const handleClickDontSaveDescription = () => {
-    setNewCommentContent(oldCommentContent)
-    setEditingCommentActive(false)
+    setState({ ...state, newCommentContent: state.prevCommentContent})
+    setState({ ...state, commentEditMode: false})
   }
 
   const handleClickDeleteComment = () => {
@@ -44,21 +53,21 @@ export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentTe
   return (
     <CommentContent>
       <User>{commentAuthor}</User>
-      {!editingCommentActive &&
-        <CommentText>{commentText}</CommentText>
+      {!state.commentEditMode &&
+        <CommentText>{commentContent}</CommentText>
       }
-      {userName === commentAuthor && !editingCommentActive &&
+      {userName === commentAuthor && !state.commentEditMode &&
         <ButtonsWrapper>
           <Button size='small' label='Edit' onClick={handleClickEditComment} />
           <Button size='small' label='Delete' onClick={handleClickDeleteComment} />
         </ButtonsWrapper>
       }
-      {editingCommentActive &&
+      {state.commentEditMode &&
       <>
           <Textarea
             placeholder='Write comment...'
-            value={newCommentContent}
-            onChange={e => setNewCommentContent(e.target.value)}
+            value={state.newCommentContent}
+            onChange={e => setState({ ...state, newCommentContent: e.target.value})}
             onKeyPress={handleKeywordSaveEditingComment}
             autoFocus={true}
             onFocus={e => e.currentTarget.select()}
@@ -93,6 +102,6 @@ interface Props {
   columnId: number,
   cardId: number,
   commentId: number,
-  commentText: string,
+  commentContent: string,
   commentAuthor: string,
 }

@@ -16,7 +16,7 @@ export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments}) =
               cardId={cardId}
               commentId={id}
               commentAuthor={author}
-              commentText={content}
+              commentContent={content}
             />
           </StyledComment>
         ))}
