@@ -8,13 +8,13 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { userNameSet } from '../../features/user/userSlice';
 import { RootState } from '../../app/store';
+import { ErrorAlert } from '../ErrorAlert';
 
 export const GreetingsModal: React.FC = () => {
   const dispatch = useDispatch();
   const userName = useSelector( (state: RootState) => state.user.userName)
-  const [modalActive, setModalActive] = useState<boolean>(userName !== '');
+  const [modalActive, setModalActive] = useState<boolean>(userName === '');
   const { Form } = withTypes<{userName?: string}>()
-  // const [modalActive, setModalActive] = useState<boolean>(userName === '');
 
   const onSubmit = (values: {userName?: string}) => {
     const newUserName = values.userName
@@ -26,7 +26,15 @@ export const GreetingsModal: React.FC = () => {
     let errors = {};
 
     if (values.userName && values.userName.length < 5) {
-      errors = {...errors, userName: 'Too short'}
+      errors = {...errors, userName: ['Too short']}
+    }
+
+    if (values.userName && values.userName.length > 20) {
+      errors = {...errors, userName: 'Too long'}
+    }
+
+    if (values.userName && values.userName.indexOf(' ') > 0) {
+      errors = {...errors, userName: 'Remove spaces from your nickname'}
     }
 
     return errors
@@ -50,7 +58,7 @@ export const GreetingsModal: React.FC = () => {
                     placeholder='Enter your name...'
                     autoFocus={true}
                   />
-                  {meta.touched && meta.error && <span>{meta.error}</span>}
+                  {meta.touched && meta.error && <ErrorAlert errorContent={meta.error} />}
                 </div>
               )}
             />
