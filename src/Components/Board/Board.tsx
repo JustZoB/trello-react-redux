@@ -1,11 +1,12 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../app/store';
+import { getDataList } from '../../selectors';
 import { Column } from '../Column';
 import { GreetingsModal } from '../GreetingsModal';
 
 export const Board: React.FC = () => {
-  const dataList = useSelector( (state: RootState) => state.board.dataList)
+  const dataList = useSelector( (state: RootState) => getDataList(state))
 
   return (
     <StyledBoard>

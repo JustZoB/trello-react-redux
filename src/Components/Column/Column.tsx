@@ -4,8 +4,8 @@ import { Card } from '../Card';
 import { AddCardButton } from './AddCardButton';
 import { TextareaHead } from '../Textarea';
 import { CardType } from '../../interfaces';
-import { columnNameEdit } from '../../features/board/boardSlice';
 import { useDispatch } from 'react-redux';
+import { columnNameEdit } from '../../store/column/columnSlice';
 
 export const Column: React.FC<Props> = ({
   columnId,
@@ -14,6 +14,10 @@ export const Column: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const columnNameRef = useRef<HTMLTextAreaElement>(null)
+
+  const handleOnChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    dispatch(columnNameEdit({columnId, newColumnName: e.target.value}))
+  }
 
   const handleKeyPressBlurColumnName = (e: React.KeyboardEvent<HTMLTextAreaElement | null>) => {
     if (e.key === 'Enter') {
@@ -26,7 +30,7 @@ export const Column: React.FC<Props> = ({
     <StyledColumn>
       <TextareaHead
         value={columnName}
-        onChange={e => dispatch(columnNameEdit({columnId, newColumnName: e.target.value}))}
+        onChange={handleOnChangeColumnName}
         onKeyPress={handleKeyPressBlurColumnName}
         textareaRef={columnNameRef}
       >

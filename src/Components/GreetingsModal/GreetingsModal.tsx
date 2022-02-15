@@ -6,13 +6,14 @@ import { Modal } from '../Modal';
 import { Field, withTypes } from 'react-final-form';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { userNameSet } from '../../features/user/userSlice';
 import { RootState } from '../../app/store';
 import { ErrorAlert } from '../ErrorAlert';
+import { userNameSet } from '../../store/user/userSlice';
+import { getUserName } from '../../selectors';
 
 export const GreetingsModal: React.FC = () => {
   const dispatch = useDispatch();
-  const userName = useSelector( (state: RootState) => state.user.userName)
+  const userName = useSelector( (state: RootState) => getUserName(state))
   const [modalActive, setModalActive] = useState<boolean>(userName === '');
   const { Form } = withTypes<{userName?: string}>()
 

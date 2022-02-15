@@ -1,8 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CardType, ColumnType, CommentType } from '../../interfaces';
+import { cardAdd, cardDelete, cardDescriptionEdit, cardNameEdit } from '../card/cardSlice';
+import { commentAdd, commentDelete, commentEdit } from '../comment/commentSlice';
+// import { commentAdd } from '../comment/commentSlice';
 
-const boardSlice = createSlice({
-  name: 'board',
+const columnSlice = createSlice({
+  name: 'column',
   initialState: {
     dataList: [
       {
@@ -58,16 +61,20 @@ const boardSlice = createSlice({
     ],
   },
   reducers: {
-    columnNameEdit(state, action) {
-      state.dataList = state.dataList.map((column: ColumnType) => {
+    columnNameEdit(state, action: PayloadAction<{ columnId: number, newColumnName: string}>) {
+      let updatadDataList = state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           return { ...column, name: action.payload.newColumnName }
         }
   
         return column
       })
+
+      state.dataList = updatadDataList
     },
-    cardAdd(state, action) {
+  },
+  extraReducers: (builder) => {
+    builder.addCase(cardAdd, (state, action) => {
       const newCard = {
         id: Number(Date.now()),
         name: action.payload.cardName
@@ -80,8 +87,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    cardDelete(state, action) {
+    });
+    
+    builder.addCase(cardDelete, (state, action) => {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           let cardList: CardType[] = column.cards?.filter((item : CardType) => item.id !== action.payload.cardId)
@@ -91,8 +99,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    cardNameEdit(state, action) {
+    });
+
+    builder.addCase(cardNameEdit, (state, action) => {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           column.cards?.map((item: CardType) => {
@@ -108,8 +117,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    cardDescriptionEdit(state, action) {
+    });
+
+    builder.addCase(cardDescriptionEdit, (state, action) => {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           column.cards?.map((item: CardType) => {
@@ -123,8 +133,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    commentAdd(state, action) {
+    });
+
+    builder.addCase(commentAdd, (state, action) => {
       const newComment = {
         id: Number(Date.now()),
         author: action.payload.userName,
@@ -148,8 +159,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    commentDelete(state, action) {
+    });
+
+    builder.addCase(commentDelete, (state, action) => {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           let cardMap: CardType[] = column.cards?.map((card: CardType) => {
@@ -167,8 +179,9 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-    commentEdit(state, action) {
+    });
+
+    builder.addCase(commentEdit, (state, action) => {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           column.cards?.map((card: CardType) => {
@@ -188,10 +201,10 @@ const boardSlice = createSlice({
   
         return column
       })
-    },
-  }
+    });
+  },
 });
 
-export const { columnNameEdit, cardAdd, cardDelete, cardNameEdit, cardDescriptionEdit, commentAdd, commentDelete, commentEdit } = boardSlice.actions;
+export const { columnNameEdit } = columnSlice.actions;
 
-export default boardSlice.reducer;
+export default columnSlice.reducer;
