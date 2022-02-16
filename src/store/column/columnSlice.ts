@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CardType, ColumnType, CommentType } from '../../interfaces';
-import { cardAdd, cardDelete, cardDescriptionEdit, cardNameEdit } from '../card/cardSlice';
-import { commentAdd, commentDelete, commentEdit } from '../comment/commentSlice';
-// import { commentAdd } from '../comment/commentSlice';
 
 const columnSlice = createSlice({
   name: 'column',
@@ -61,20 +58,22 @@ const columnSlice = createSlice({
     ],
   },
   reducers: {
-    columnNameEdit(state, action: PayloadAction<{ columnId: number, newColumnName: string}>) {
-      let updatadDataList = state.dataList = state.dataList.map((column: ColumnType) => {
+    columnNameEdit(state, action: PayloadAction<{
+      columnId: number,
+      newColumnName: string
+    }>) {
+      state.dataList = state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           return { ...column, name: action.payload.newColumnName }
         }
   
         return column
       })
-
-      state.dataList = updatadDataList
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(cardAdd, (state, action) => {
+    cardAdd(state, action: PayloadAction<{
+      columnId: number,
+      cardName: string,
+    }>) {
       const newCard = {
         id: Number(Date.now()),
         name: action.payload.cardName
@@ -87,9 +86,11 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-    
-    builder.addCase(cardDelete, (state, action) => {
+    },
+    cardDelete(state, action: PayloadAction<{
+      columnId: number,
+      cardId: number,
+    }>) {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           let cardList: CardType[] = column.cards?.filter((item : CardType) => item.id !== action.payload.cardId)
@@ -99,9 +100,12 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-
-    builder.addCase(cardNameEdit, (state, action) => {
+    },
+    cardNameEdit (state, action: PayloadAction<{
+      columnId: number,
+      cardId: number,
+      newName: string,
+    }>) {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           column.cards?.map((item: CardType) => {
@@ -117,9 +121,12 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-
-    builder.addCase(cardDescriptionEdit, (state, action) => {
+    },
+    cardDescriptionEdit(state, action: PayloadAction<{
+      columnId: number,
+      cardId: number,
+      description: string,
+    }>) {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           column.cards?.map((item: CardType) => {
@@ -133,9 +140,13 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-
-    builder.addCase(commentAdd, (state, action) => {
+    },
+    commentAdd (state, action: PayloadAction<{
+      userName: string,
+      columnId: number,
+      cardId: number,
+      commentText: string,
+    }>) {
       const newComment = {
         id: Number(Date.now()),
         author: action.payload.userName,
@@ -159,9 +170,12 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-
-    builder.addCase(commentDelete, (state, action) => {
+    },
+    commentDelete (state, action: PayloadAction<{
+      columnId: number,
+      cardId: number,
+      commentId: number,
+    }>) {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId && column.cards !== undefined) {
           let cardMap: CardType[] = column.cards?.map((card: CardType) => {
@@ -179,9 +193,13 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
-
-    builder.addCase(commentEdit, (state, action) => {
+    },
+    commentEdit (state, action: PayloadAction<{
+      columnId: number,
+      cardId: number,
+      commentId: number,
+      newCommentContent: string,
+    }>) {
       state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           column.cards?.map((card: CardType) => {
@@ -201,10 +219,10 @@ const columnSlice = createSlice({
   
         return column
       })
-    });
+    },
   },
 });
 
-export const { columnNameEdit } = columnSlice.actions;
+export const { columnNameEdit, cardAdd, cardDelete, cardDescriptionEdit, cardNameEdit, commentAdd, commentDelete, commentEdit } = columnSlice.actions;
 
 export default columnSlice.reducer;

@@ -12,9 +12,8 @@ import { CommentsContent } from './CommentsContent';
 import { CommentType } from '../../../interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { cardDelete, cardDescriptionEdit, cardNameEdit } from '../../../store/card/cardSlice';
-import { commentAdd } from '../../../store/comment/commentSlice';
-import { getUserName } from '../../../selectors';
+import { cardDelete, cardDescriptionEdit, cardNameEdit, commentAdd } from '../../../store/column/columnSlice';
+import { getUserNameSuperSelector } from '../../../selectors';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
@@ -27,7 +26,7 @@ export const CardModal: React.FC<CardModalProps> = ({
     comments,
   }) => {
   const dispatch = useDispatch();
-  const userName = useSelector( (state: RootState) => getUserName(state))
+  const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
   const cardNameRef = useRef<HTMLTextAreaElement>(null)
 
   const [state, setState] = useState<{

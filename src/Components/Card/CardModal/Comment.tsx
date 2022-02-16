@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../../app/store';
-import { getUserName } from '../../../selectors';
-import { commentDelete, commentEdit } from '../../../store/comment/commentSlice';
+import { getUserNameSuperSelector } from '../../../selectors';
+import { commentDelete, commentEdit } from '../../../store/column/columnSlice';
 import { Button, ButtonsWrapper } from '../../Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 
 export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentContent, commentAuthor}) => {
   const dispatch = useDispatch();
-  const userName = useSelector( (state: RootState) => getUserName(state))
+  const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
 
   const [state, setState] = useState<{
     commentEditMode: boolean,

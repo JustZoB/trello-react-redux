@@ -5,7 +5,7 @@ import { Button, ButtonsWrapper } from '../../Button/Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 import { useDispatch } from 'react-redux';
-import { cardAdd } from '../../../store/card/cardSlice';
+import { cardAdd } from '../../../store/column/columnSlice';
 
 export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId}) => {
   const dispatch = useDispatch();

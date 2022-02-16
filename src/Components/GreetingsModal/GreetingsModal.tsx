@@ -9,11 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { ErrorAlert } from '../ErrorAlert';
 import { userNameSet } from '../../store/user/userSlice';
-import { getUserName } from '../../selectors';
+import { getUserNameSuperSelector } from '../../selectors';
 
 export const GreetingsModal: React.FC = () => {
   const dispatch = useDispatch();
-  const userName = useSelector( (state: RootState) => getUserName(state))
+  const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
   const [modalActive, setModalActive] = useState<boolean>(userName === '');
   const { Form } = withTypes<{userName?: string}>()
 

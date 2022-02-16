@@ -11,14 +11,10 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import columnReducer from '../store/column/columnSlice';
-import cardReducer from '../store/card/cardSlice';
-import commentReducer from '../store/comment/commentSlice';
 import userReducer from '../store/user/userSlice';
 
 const rootReducer = combineReducers({
   column: columnReducer,
-  card: cardReducer,
-  comment: commentReducer,
   user: userReducer,
 });
 
