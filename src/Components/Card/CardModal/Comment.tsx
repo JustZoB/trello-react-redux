@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../../store/store';
-import { getUserNameSuperSelector } from '../../../store/selectors';
+import { getCommentAuthor, getCommentContent, getUserNameSuperSelector } from '../../../store/selectors';
 import { deleteComment, editComment } from '../../../store/column/columnSlice';
 import { Button, ButtonsWrapper } from '../../Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 
-export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentContent, commentAuthor}) => {
+export const Comment: React.FC<Props> = ({
+  columnId,
+  cardId,
+  commentId,
+}) => {
   const dispatch = useDispatch();
   const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
+  const commentAuthor = useSelector( (state: RootState) => getCommentAuthor(state, columnId, cardId, commentId))
+  const commentContent = useSelector( (state: RootState) => getCommentContent(state, columnId, cardId, commentId))
   const [commentEditMode, setCommentEditMode] = useState<boolean>(false)
 
   const [editedCommentContent, setEditedCommentContent] = useState<{
@@ -102,6 +108,4 @@ interface Props {
   columnId: number,
   cardId: number,
   commentId: number,
-  commentContent: string,
-  commentAuthor: string,
 }

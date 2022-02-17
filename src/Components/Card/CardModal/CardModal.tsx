@@ -9,24 +9,24 @@ import { Modal } from '../../Modal';
 import { AddDescriptionButton } from './AddDescriptionButton';
 import { DescriptionContent } from './DescriptionContent';
 import { CommentsContent } from './CommentsContent';
-import { CommentType } from '../../../interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import { deleteCard, editCardDescription, editCardName, addComment } from '../../../store/column/columnSlice';
-import { getUserNameSuperSelector } from '../../../store/selectors';
+import { getCardDescription, getCardName, getColumnName, getUserNameSuperSelector } from '../../../store/selectors';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
     setActive: modalActive,
     cardId,
     columnId,
-    colName,
-    name,
-    description,
-    comments,
   }) => {
   const dispatch = useDispatch();
+
   const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
+  const columnName = useSelector( (state: RootState) => getColumnName(state, columnId))
+  const cardName = useSelector( (state: RootState) => getCardName(state, columnId, cardId))
+  const cardDescription = useSelector( (state: RootState) => getCardDescription(state, columnId, cardId))
+
   const cardNameRef = useRef<HTMLTextAreaElement>(null)
   const [descriptionEditMode, setDescriptionEditMode] = useState<boolean>(false)
   const [commentContent, setCommentContent] = useState<string>('')
@@ -36,8 +36,8 @@ export const CardModal: React.FC<CardModalProps> = ({
     prevDescription: string,
   }>(
     {
-      newDescription: description !== undefined ? description : '',
-      prevDescription: description !== undefined ? description : '',
+      newDescription: cardDescription !== undefined ? cardDescription : '',
+      prevDescription: cardDescription !== undefined ? cardDescription : '',
     }
   );
 
@@ -117,14 +117,14 @@ export const CardModal: React.FC<CardModalProps> = ({
     >
       <Header>
         <TextareaHead
-          value={name}
+          value={cardName}
           onChange={e => dispatch(editCardName({columnId, cardId, newName: e.target.value}))}
           onKeyPress={handleKeyPressBlurCardName}
           textareaRef={cardNameRef}
         >
-          {name}
+          {cardName}
         </TextareaHead>
-        <p>in column {colName}</p>
+        <p>in column {columnName}</p>
       </Header>
 
       <Description>
@@ -177,7 +177,6 @@ export const CardModal: React.FC<CardModalProps> = ({
         <CommentsContent
           columnId={columnId}
           cardId={cardId}
-          comments={comments}
         />
       </Comments>
 
@@ -246,8 +245,4 @@ interface CardModalProps {
   setActive: React.Dispatch<React.SetStateAction<boolean>>,
   cardId: number,
   columnId: number,
-  colName: string,
-  name: string,
-  description?: string,
-  comments?: CommentType[],
 }

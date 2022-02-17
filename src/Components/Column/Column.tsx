@@ -3,17 +3,18 @@ import styled from 'styled-components';
 import { Card } from '../Card';
 import { AddCardButton } from './AddCardButton';
 import { TextareaHead } from '../Textarea';
-import { CardType } from '../../interfaces';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { editColumnName } from '../../store/column/columnSlice';
+import { getColumnCards, getColumnName } from '../../store/selectors';
+import { RootState } from '../../store/store';
 
 export const Column: React.FC<Props> = ({
   columnId,
-  name: columnName,
-  cards,
 }) => {
   const dispatch = useDispatch();
   const columnNameRef = useRef<HTMLTextAreaElement>(null)
+  const columnName = useSelector( (state: RootState) => getColumnName(state, columnId))
+  const cards = useSelector( (state: RootState) => getColumnCards(state, columnId))
 
   const handleOnChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatch(editColumnName({columnId, newColumnName: e.target.value}))
@@ -39,15 +40,11 @@ export const Column: React.FC<Props> = ({
 
       {cards && cards.length !== 0 &&
         <CardList>
-          {cards.map(({id, name, description, comments}) => (
+          {cards.map(({id}) => (
             <Card
               key={id}
-              id={id}
+              cardId={id}
               columnId={columnId}
-              name={name}
-              description={description}
-              comments={comments}
-              colName={columnName}
             />
           ))}
         </CardList>
@@ -104,6 +101,4 @@ const CardList = styled.div`
 
 interface Props {
   columnId: number,
-  name: string,
-  cards?: CardType[],
 }

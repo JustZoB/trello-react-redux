@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { CommentType } from '../../interfaces';
+import { useSelector } from 'react-redux';
+import { getCardName } from '../../store/selectors';
+import { RootState } from '../../store/store';
 import { StyledCard } from '../StyledCard';
 import { CardModal } from './CardModal';
 
 export const Card: React.FC<CardProps> = ({
-  id,
+  cardId,
   columnId,
-  colName,
-  name,
-  description,
-  comments,
 }) => {
   const [modalActive, setModalActive] = useState<boolean>(false);
+  const name = useSelector( (state: RootState) => getCardName(state, columnId, cardId))
 
   return (
     <div>
@@ -22,12 +21,8 @@ export const Card: React.FC<CardProps> = ({
         <CardModal
           active={modalActive}
           setActive={setModalActive}
-          cardId={id}
+          cardId={cardId}
           columnId={columnId}
-          colName={colName}
-          name={name}
-          description={description}
-          comments={comments}
         />
       }
     </div>
@@ -35,10 +30,6 @@ export const Card: React.FC<CardProps> = ({
 }
 
 interface CardProps {
-  colName: string,
-  id: number,
+  cardId: number,
   columnId: number,
-  name: string,
-  description?: string,
-  comments?: CommentType[],
 }

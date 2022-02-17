@@ -1,22 +1,24 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CommentType } from '../../../interfaces';
+import { getCardComments } from '../../../store/selectors';
+import { RootState } from '../../../store/store';
 import { Comment } from './Comment'
 
-export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments}) => {
+export const CommentsContent: React.FC<Props> = ({columnId, cardId}) => {
+  const comments = useSelector( (state: RootState) => getCardComments(state, columnId, cardId))
+
   return (
     <>
     {comments &&
       <Content>
-        {comments.map(({id, author, content}) => (
+        {comments.map(({id, author}) => (
           <CommentWrapper key={id}>
             <Avatar title={author}>{author.charAt(0).toUpperCase()}</Avatar>
             <Comment
               columnId={columnId}
               cardId={cardId}
               commentId={id}
-              commentAuthor={author}
-              commentContent={content}
             />
           </CommentWrapper>
         ))}
@@ -54,5 +56,4 @@ const Avatar = styled.div`
 interface Props {
   columnId: number,
   cardId: number,
-  comments?: CommentType[],
 }

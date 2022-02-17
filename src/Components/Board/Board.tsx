@@ -11,12 +11,10 @@ export const Board: React.FC = () => {
   return (
     <StyledBoard>
       <ColumnListWrapper>
-        {dataList.map(({columnId, name, cards}) => (
+        {dataList.map(({columnId}) => (
           <Column
             key={columnId}
             columnId={columnId}
-            name={name}
-            cards={cards}
           />
         ))}
       </ColumnListWrapper>
