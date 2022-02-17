@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../../app/store';
-import { getUserNameSuperSelector } from '../../../selectors';
-import { commentDelete, commentEdit } from '../../../store/column/columnSlice';
+import { RootState } from '../../../store/store';
+import { getUserNameSuperSelector } from '../../../store/selectors';
+import { deleteComment, editComment } from '../../../store/column/columnSlice';
 import { Button, ButtonsWrapper } from '../../Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
@@ -11,28 +11,27 @@ import { Textarea } from '../../Textarea';
 export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentContent, commentAuthor}) => {
   const dispatch = useDispatch();
   const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
+  const [commentEditMode, setCommentEditMode] = useState<boolean>(false)
 
-  const [state, setState] = useState<{
-    commentEditMode: boolean,
+  const [editedCommentContent, setEditedCommentContent] = useState<{
     newCommentContent: string,
     prevCommentContent: string,
   }>(
     {
-      commentEditMode: false,
       newCommentContent: commentContent !== undefined ? commentContent : '',
       prevCommentContent: commentContent !== undefined ? commentContent : '',
     }
   );
 
   const handleClickEditComment = () => {
-    setState({ ...state, prevCommentContent: state.newCommentContent})
-    setState({ ...state, commentEditMode: true})
+    setEditedCommentContent({ ...editedCommentContent, prevCommentContent: editedCommentContent.newCommentContent})
+    setCommentEditMode(true)
   }
 
   const handleClickSaveEditingComment = () => {
-    dispatch(commentEdit({columnId, cardId, commentId, newCommentContent: state.newCommentContent}))
-    setState({ ...state, newCommentContent: state.newCommentContent})
-    setState({ ...state, commentEditMode: false})
+    dispatch(editComment({columnId, cardId, commentId, newCommentContent: editedCommentContent.newCommentContent}))
+    setEditedCommentContent({ ...editedCommentContent, newCommentContent: editedCommentContent.newCommentContent})
+    setCommentEditMode(false)
   }
 
   const handleKeywordSaveEditingComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -43,32 +42,32 @@ export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentCo
   }
 
   const handleClickDontSaveDescription = () => {
-    setState({ ...state, newCommentContent: state.prevCommentContent})
-    setState({ ...state, commentEditMode: false})
+    setEditedCommentContent({ ...editedCommentContent, newCommentContent: editedCommentContent.prevCommentContent})
+    setCommentEditMode(false)
   }
 
   const handleClickDeleteComment = () => {
-    dispatch(commentDelete({columnId, cardId, commentId}))
+    dispatch(deleteComment({columnId, cardId, commentId}))
   }
 
   return (
     <CommentContent>
       <User>{commentAuthor}</User>
-      {!state.commentEditMode &&
+      {!commentEditMode &&
         <CommentText>{commentContent}</CommentText>
       }
-      {userName === commentAuthor && !state.commentEditMode &&
+      {userName === commentAuthor && !commentEditMode &&
         <ButtonsWrapper>
           <Button size='small' label='Edit' onClick={handleClickEditComment} />
           <Button size='small' label='Delete' onClick={handleClickDeleteComment} />
         </ButtonsWrapper>
       }
-      {state.commentEditMode &&
+      {commentEditMode &&
       <>
           <Textarea
             placeholder='Write comment...'
-            value={state.newCommentContent}
-            onChange={e => setState({ ...state, newCommentContent: e.target.value})}
+            value={editedCommentContent.newCommentContent}
+            onChange={e => setEditedCommentContent({ ...editedCommentContent, newCommentContent: e.target.value})}
             onKeyPress={handleKeywordSaveEditingComment}
             autoFocus={true}
             onFocus={e => e.currentTarget.select()}

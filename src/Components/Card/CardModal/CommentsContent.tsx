@@ -7,9 +7,9 @@ export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments}) =
   return (
     <>
     {comments &&
-      <StyledCommentsContent>
+      <Content>
         {comments.map(({id, author, content}) => (
-          <StyledComment key={id}>
+          <CommentWrapper key={id}>
             <Avatar title={author}>{author.charAt(0).toUpperCase()}</Avatar>
             <Comment
               columnId={columnId}
@@ -18,22 +18,22 @@ export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments}) =
               commentAuthor={author}
               commentContent={content}
             />
-          </StyledComment>
+          </CommentWrapper>
         ))}
-      </StyledCommentsContent>
+      </Content>
     }
     </>
   );
 }
 
-const StyledCommentsContent = styled.div`
+const Content = styled.div`
   font-size: 14px;
   width: 100%;
   background-color: white;
   margin: 10px 0 0;
 `
 
-const StyledComment = styled.div`
+const CommentWrapper = styled.div`
   display: flex;
   padding: 10px 0;
 `

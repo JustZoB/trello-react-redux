@@ -5,7 +5,7 @@ import { AddCardButton } from './AddCardButton';
 import { TextareaHead } from '../Textarea';
 import { CardType } from '../../interfaces';
 import { useDispatch } from 'react-redux';
-import { columnNameEdit } from '../../store/column/columnSlice';
+import { editColumnName } from '../../store/column/columnSlice';
 
 export const Column: React.FC<Props> = ({
   columnId,
@@ -16,7 +16,7 @@ export const Column: React.FC<Props> = ({
   const columnNameRef = useRef<HTMLTextAreaElement>(null)
 
   const handleOnChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(columnNameEdit({columnId, newColumnName: e.target.value}))
+    dispatch(editColumnName({columnId, newColumnName: e.target.value}))
   }
 
   const handleKeyPressBlurColumnName = (e: React.KeyboardEvent<HTMLTextAreaElement | null>) => {

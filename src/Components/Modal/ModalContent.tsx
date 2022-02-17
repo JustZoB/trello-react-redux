@@ -2,13 +2,13 @@ import styled from 'styled-components';
 
 export const ModalContent: React.FC<ModalContentProps> = ({size, onClick, children}) => {
   return (
-    <StyledModalContent size={size} onClick={onClick}>
+    <Content size={size} onClick={onClick}>
       {children}
-    </StyledModalContent>
+    </Content>
   );
 }
 
-const StyledModalContent = styled.div<ModalContentProps>`
+const Content = styled.div<ModalContentProps>`
   position: relative;
   width: ${(props) => (props.size === 'small' ? '400px' : '600px')};
   height: ${(props) => (props.size === 'small' ? 'unset' : '700px')};

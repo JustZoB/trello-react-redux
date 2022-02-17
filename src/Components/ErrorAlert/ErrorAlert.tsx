@@ -3,13 +3,13 @@ import styled from 'styled-components';
 
 export const ErrorAlert: React.FC<Props> = ({errorContent}) => {
   return (
-    <StyledErrorAlert>
+    <Error>
       {errorContent}
-    </StyledErrorAlert>
+    </Error>
   );
 }
 
-const StyledErrorAlert = styled.div`
+const Error = styled.div`
   width: 315px;
   height: 20px;
   border-radius: 5px;

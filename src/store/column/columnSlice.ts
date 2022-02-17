@@ -58,11 +58,11 @@ const columnSlice = createSlice({
     ],
   },
   reducers: {
-    columnNameEdit(state, action: PayloadAction<{
+    editColumnName(state, action: PayloadAction<{
       columnId: number,
       newColumnName: string
     }>) {
-      state.dataList = state.dataList = state.dataList.map((column: ColumnType) => {
+      state.dataList = state.dataList.map((column: ColumnType) => {
         if (column.columnId === action.payload.columnId) {
           return { ...column, name: action.payload.newColumnName }
         }
@@ -70,7 +70,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    cardAdd(state, action: PayloadAction<{
+    addCard(state, action: PayloadAction<{
       columnId: number,
       cardName: string,
     }>) {
@@ -87,7 +87,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    cardDelete(state, action: PayloadAction<{
+    deleteCard(state, action: PayloadAction<{
       columnId: number,
       cardId: number,
     }>) {
@@ -101,7 +101,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    cardNameEdit (state, action: PayloadAction<{
+    editCardName (state, action: PayloadAction<{
       columnId: number,
       cardId: number,
       newName: string,
@@ -122,7 +122,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    cardDescriptionEdit(state, action: PayloadAction<{
+    editCardDescription(state, action: PayloadAction<{
       columnId: number,
       cardId: number,
       description: string,
@@ -141,7 +141,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    commentAdd (state, action: PayloadAction<{
+    addComment (state, action: PayloadAction<{
       userName: string,
       columnId: number,
       cardId: number,
@@ -171,7 +171,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    commentDelete (state, action: PayloadAction<{
+    deleteComment (state, action: PayloadAction<{
       columnId: number,
       cardId: number,
       commentId: number,
@@ -194,7 +194,7 @@ const columnSlice = createSlice({
         return column
       })
     },
-    commentEdit (state, action: PayloadAction<{
+    editComment (state, action: PayloadAction<{
       columnId: number,
       cardId: number,
       commentId: number,
@@ -223,6 +223,15 @@ const columnSlice = createSlice({
   },
 });
 
-export const { columnNameEdit, cardAdd, cardDelete, cardDescriptionEdit, cardNameEdit, commentAdd, commentDelete, commentEdit } = columnSlice.actions;
+export const {
+  editColumnName,
+  addCard,
+  deleteCard,
+  editCardDescription,
+  editCardName,
+  addComment,
+  deleteComment,
+  editComment,
+} = columnSlice.actions;
 
 export default columnSlice.reducer;

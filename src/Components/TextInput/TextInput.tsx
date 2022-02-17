@@ -3,13 +3,13 @@ import styled from 'styled-components';
 
 export const TextInput: React.FC<Props> = (props) => {
   return (
-    <StyledTextInput
+    <Input
       {...props}
     />
   );
 }
 
-const StyledTextInput = styled.input`
+const Input = styled.input`
   font-size: 14px;
   padding: 5px 10px;
   margin-right: 5px;

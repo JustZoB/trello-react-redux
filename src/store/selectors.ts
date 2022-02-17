@@ -1,5 +1,5 @@
 import { createSelector } from "reselect"
-import { ColumnType } from "./interfaces"
+import { ColumnType } from "../interfaces"
 
 export const getDataList = (state: { column: { dataList: ColumnType[] } }) => state.column.dataList
 

@@ -6,10 +6,10 @@ import { Modal } from '../Modal';
 import { Field, withTypes } from 'react-final-form';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import { RootState } from '../../store/store';
 import { ErrorAlert } from '../ErrorAlert';
 import { userNameSet } from '../../store/user/userSlice';
-import { getUserNameSuperSelector } from '../../selectors';
+import { getUserNameSuperSelector } from '../../store/selectors';
 
 export const GreetingsModal: React.FC = () => {
   const dispatch = useDispatch();

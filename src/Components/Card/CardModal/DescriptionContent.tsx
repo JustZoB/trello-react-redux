@@ -3,15 +3,15 @@ import styled from 'styled-components';
 
 export const DescriptionContent: React.FC<Props> = ({description, onClick}) => {
   return (
-    <StyledDescriptionContent
+    <Content
       onClick={onClick}
     >
       {description}
-    </StyledDescriptionContent>
+    </Content>
   );
 }
 
-const StyledDescriptionContent = styled.div`
+const Content = styled.div`
   font-size: 14px;
   width: calc(100% - 20px);
   background-color: white;

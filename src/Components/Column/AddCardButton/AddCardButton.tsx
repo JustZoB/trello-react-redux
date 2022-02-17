@@ -5,7 +5,7 @@ import { Button, ButtonsWrapper } from '../../Button/Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 import { useDispatch } from 'react-redux';
-import { cardAdd } from '../../../store/column/columnSlice';
+import { addCard } from '../../../store/column/columnSlice';
 
 export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId}) => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ export const AddCardButton: React.FC<AddCardButtonProps> = ({columnId}) => {
 
   const handleClickAddCard = () => {
     if (cardName !== '') {
-      dispatch(cardAdd({columnId, cardName}))
+      dispatch(addCard({columnId, cardName}))
       setCardName('')
     }
   }

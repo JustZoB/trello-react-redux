@@ -10,8 +10,8 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import columnReducer from '../store/column/columnSlice';
-import userReducer from '../store/user/userSlice';
+import columnReducer from './column/columnSlice';
+import userReducer from './user/userSlice';
 
 const rootReducer = combineReducers({
   column: columnReducer,

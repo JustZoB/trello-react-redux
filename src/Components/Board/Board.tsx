@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../app/store';
-import { getDataListSuperSelector } from '../../selectors';
+import { RootState } from '../../store/store';
+import { getDataListSuperSelector } from '../../store/selectors';
 import { Column } from '../Column';
 import { GreetingsModal } from '../GreetingsModal';
 
