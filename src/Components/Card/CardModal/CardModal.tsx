@@ -9,35 +9,42 @@ import { Modal } from '../../Modal';
 import { AddDescriptionButton } from './AddDescriptionButton';
 import { DescriptionContent } from './DescriptionContent';
 import { CommentsContent } from './CommentsContent';
-import { CommentType } from '../../../interfaces';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { deleteCard, editCardDescription, editCardName, addComment } from '../../../store/column/columnSlice';
+import { getCardDescription, getCardName, getColumnName, getUserNameSuperSelector } from '../../../store/selectors';
 
 export const CardModal: React.FC<CardModalProps> = ({
     active,
-    setActive,
+    setActive: modalActive,
     cardId,
     columnId,
-    colName,
-    name,
-    description,
-    comments,
-    userName,
-    onChangeCardName,
-    deleteCard,
-    changeDescriptionCard,
-    addComment,
-    editComment,
-    deleteComment
   }) => {
-  const [descriptionActive, setDescriptionActive] = useState<boolean>(false);
-  const [newDescription, setNewDescription] = useState<string>(description !== undefined ? description : '');
-  const [oldDescription, setOldDescription] = useState<string>(description !== undefined ? description : '');
-  const [commentText, setCommentText] = useState<string>('');
+  const dispatch = useDispatch();
+
+  const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
+  const columnName = useSelector( (state: RootState) => getColumnName(state, columnId))
+  const cardName = useSelector( (state: RootState) => getCardName(state, columnId, cardId))
+  const cardDescription = useSelector( (state: RootState) => getCardDescription(state, columnId, cardId))
+
   const cardNameRef = useRef<HTMLTextAreaElement>(null)
+  const [descriptionEditMode, setDescriptionEditMode] = useState<boolean>(false)
+  const [commentContent, setCommentContent] = useState<string>('')
+
+  const [editedDescription, setEditedDescription] = useState<{
+    newDescription: string,
+    prevDescription: string,
+  }>(
+    {
+      newDescription: cardDescription !== undefined ? cardDescription : '',
+      prevDescription: cardDescription !== undefined ? cardDescription : '',
+    }
+  );
 
   const handleClickCloseModal = () => {
-    setNewDescription(oldDescription)
-    setDescriptionActive(false)
-    setActive(false)
+    setEditedDescription({ ...editedDescription, prevDescription: editedDescription.newDescription})
+    setDescriptionEditMode(false)
+    modalActive(false)
   }
 
   const handleKeyPressEscapeCloseModal = useCallback((e: KeyboardEvent) => {
@@ -45,6 +52,7 @@ export const CardModal: React.FC<CardModalProps> = ({
       e.preventDefault();
       handleClickCloseModal()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -56,45 +64,42 @@ export const CardModal: React.FC<CardModalProps> = ({
   }, [handleKeyPressEscapeCloseModal])
 
   const handleClickOpenAddingDescription = () => {
-    setOldDescription(newDescription)
-    setDescriptionActive(true)
+    setEditedDescription({ ...editedDescription, prevDescription: editedDescription.newDescription})
+    setDescriptionEditMode(true)
   }
 
   const handleClickSaveDescription = () => {
-    changeDescriptionCard(columnId, cardId, newDescription)
-    setNewDescription(newDescription)
-    setDescriptionActive(false)
+    dispatch(editCardDescription({columnId, cardId, description: editedDescription.newDescription}))
+    setEditedDescription({ ...editedDescription, newDescription: editedDescription.newDescription})
+    setDescriptionEditMode(false)
   }
 
   const handleKeywordSaveDescription = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      changeDescriptionCard(columnId, cardId, newDescription)
-      setNewDescription(newDescription)
-      setDescriptionActive(false)
+      handleClickSaveDescription()
     }
   }
 
   const handleClickDontSaveDescription = () => {
-    setNewDescription(oldDescription)
-    setDescriptionActive(false)
+    setEditedDescription({ ...editedDescription, newDescription: editedDescription.prevDescription})
+    setDescriptionEditMode(false)
   }
 
   const handleClickDeleteCard = () => {
-    deleteCard(columnId, cardId)
-    setDescriptionActive(false)
+    dispatch(deleteCard({columnId, cardId}))
+    setDescriptionEditMode(false)
   }
 
   const handleClickAddComment = () => {
-    addComment(columnId, cardId, commentText);
-    setCommentText('')
+    dispatch(addComment({columnId, cardId, commentText: commentContent, userName}))
+    setCommentContent('')
   }
 
   const handleKeywordAddComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addComment(columnId, cardId, commentText);
-      setCommentText('')
+      handleClickAddComment()
     }
   }
 
@@ -108,43 +113,43 @@ export const CardModal: React.FC<CardModalProps> = ({
   return (
     <Modal
       $isActive={active}
-      onClick={() => setActive(false)}
+      onClick={() => modalActive(false)}
     >
       <Header>
         <TextareaHead
-          value={name}
-          onChange={e => onChangeCardName(e.target.value)}
+          value={cardName}
+          onChange={e => dispatch(editCardName({columnId, cardId, newName: e.target.value}))}
           onKeyPress={handleKeyPressBlurCardName}
           textareaRef={cardNameRef}
         >
-          {name}
+          {cardName}
         </TextareaHead>
-        <p>in column {colName}</p>
+        <p>in column {columnName}</p>
       </Header>
 
       <Description>
         <h4>Description</h4>
 
-        {newDescription && !descriptionActive &&
+        {editedDescription.newDescription && !descriptionEditMode &&
           <DescriptionContent
-            description={newDescription}
+            description={editedDescription.newDescription}
             onClick={handleClickOpenAddingDescription}
           />
         }
 
-        {!newDescription && !descriptionActive &&
+        {!editedDescription.newDescription && !descriptionEditMode &&
           <AddDescriptionButton
-            description={newDescription}
+            description={editedDescription.newDescription}
             onClick={handleClickOpenAddingDescription}
           />
         }
 
-        {descriptionActive &&
+        {descriptionEditMode &&
           <AddDescriptionWrapper>
             <Textarea
               placeholder='Add description...'
-              value={newDescription}
-              onChange={e => setNewDescription(e.target.value)}
+              value={editedDescription.newDescription}
+              onChange={e => setEditedDescription({ ...editedDescription, newDescription: e.target.value})}
               onKeyPress={handleKeywordSaveDescription}
               autoFocus={true}
               onFocus={e => e.currentTarget.select()}
@@ -163,8 +168,8 @@ export const CardModal: React.FC<CardModalProps> = ({
         <AddCommentWrapper>
           <Textarea
             placeholder='Write comment...'
-            value={commentText}
-            onChange={e => setCommentText(e.target.value)}
+            value={commentContent}
+            onChange={e => setCommentContent(e.target.value)}
             onKeyPress={handleKeywordAddComment}
           />
           <Button label='Post' onClick={handleClickAddComment} />
@@ -172,10 +177,6 @@ export const CardModal: React.FC<CardModalProps> = ({
         <CommentsContent
           columnId={columnId}
           cardId={cardId}
-          comments={comments}
-          userName={userName}
-          editComment={editComment}
-          deleteComment={deleteComment}
         />
       </Comments>
 
@@ -199,6 +200,7 @@ const Header = styled.div`
     margin-left: 10px;
   }
 `
+
 const Description = styled.div`
   padding: 10px;
 
@@ -243,15 +245,4 @@ interface CardModalProps {
   setActive: React.Dispatch<React.SetStateAction<boolean>>,
   cardId: number,
   columnId: number,
-  colName: string,
-  name: string,
-  description?: string,
-  comments?: CommentType[],
-  userName: string,
-  onChangeCardName: (cardName: string) => void,
-  deleteCard: (columnId: number, cardId: number) => void,
-  changeDescriptionCard: (columnId: number, cardId: number, descriptionCard: string) => void,
-  addComment: (columnId: number, cardId: number, commentText: string) => void,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

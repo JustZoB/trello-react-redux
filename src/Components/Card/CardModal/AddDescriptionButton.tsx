@@ -3,15 +3,15 @@ import styled from 'styled-components';
 
 export const AddDescriptionButton: React.FC<Props> = ({description, onClick}) => {
   return (
-    <StyledAddDescriptionButton
+    <Button
       onClick={onClick}
     >
       {description ? description : 'Add description...'}
-    </StyledAddDescriptionButton>
+    </Button>
   );
 }
 
-const StyledAddDescriptionButton = styled.div`
+const Button = styled.div`
   font-size: 14px;
   width: calc(100% - 20px);
   background-color: #EEEEEE;

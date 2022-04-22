@@ -1,61 +1,79 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { RootState } from '../../../store/store';
+import { getCommentAuthor, getCommentContent, getUserNameSuperSelector } from '../../../store/selectors';
+import { deleteComment, editComment } from '../../../store/column/columnSlice';
 import { Button, ButtonsWrapper } from '../../Button';
 import { CloseButton } from '../../CloseButton';
 import { Textarea } from '../../Textarea';
 
-export const Comment: React.FC<Props> = ({columnId, cardId, commentId, commentText, commentAuthor, userName, editComment, deleteComment}) => {
-  const [editingCommentActive, setEditingCommentActive] = useState<boolean>(false);
-  const [newCommentText, setNewCommentText] = useState<string>(commentText !== undefined ? commentText : '');
-  const [oldCommentText, setOldCommentText] = useState<string>(commentText !== undefined ? commentText : '');
+export const Comment: React.FC<Props> = ({
+  columnId,
+  cardId,
+  commentId,
+}) => {
+  const dispatch = useDispatch();
+  const userName = useSelector( (state: RootState) => getUserNameSuperSelector(state))
+  const commentAuthor = useSelector( (state: RootState) => getCommentAuthor(state, columnId, cardId, commentId))
+  const commentContent = useSelector( (state: RootState) => getCommentContent(state, columnId, cardId, commentId))
+  const [commentEditMode, setCommentEditMode] = useState<boolean>(false)
+
+  const [editedCommentContent, setEditedCommentContent] = useState<{
+    newCommentContent: string,
+    prevCommentContent: string,
+  }>(
+    {
+      newCommentContent: commentContent !== undefined ? commentContent : '',
+      prevCommentContent: commentContent !== undefined ? commentContent : '',
+    }
+  );
 
   const handleClickEditComment = () => {
-    setOldCommentText(newCommentText)
-    setEditingCommentActive(true)
+    setEditedCommentContent({ ...editedCommentContent, prevCommentContent: editedCommentContent.newCommentContent})
+    setCommentEditMode(true)
   }
 
   const handleClickSaveEditingComment = () => {
-    editComment(columnId, cardId, commentId, newCommentText)
-    setNewCommentText(newCommentText)
-    setEditingCommentActive(false)
+    dispatch(editComment({columnId, cardId, commentId, newCommentContent: editedCommentContent.newCommentContent}))
+    setEditedCommentContent({ ...editedCommentContent, newCommentContent: editedCommentContent.newCommentContent})
+    setCommentEditMode(false)
   }
 
   const handleKeywordSaveEditingComment = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      editComment(columnId, cardId, commentId, newCommentText)
-      setNewCommentText(newCommentText)
-      setEditingCommentActive(false)
+      handleClickSaveEditingComment()
     }
   }
 
   const handleClickDontSaveDescription = () => {
-    setNewCommentText(oldCommentText)
-    setEditingCommentActive(false)
+    setEditedCommentContent({ ...editedCommentContent, newCommentContent: editedCommentContent.prevCommentContent})
+    setCommentEditMode(false)
   }
 
   const handleClickDeleteComment = () => {
-    deleteComment(columnId, cardId, commentId)
+    dispatch(deleteComment({columnId, cardId, commentId}))
   }
 
   return (
     <CommentContent>
       <User>{commentAuthor}</User>
-      {!editingCommentActive &&
-        <CommentText>{commentText}</CommentText>
+      {!commentEditMode &&
+        <CommentText>{commentContent}</CommentText>
       }
-      {userName === commentAuthor && !editingCommentActive &&
+      {userName === commentAuthor && !commentEditMode &&
         <ButtonsWrapper>
           <Button size='small' label='Edit' onClick={handleClickEditComment} />
           <Button size='small' label='Delete' onClick={handleClickDeleteComment} />
         </ButtonsWrapper>
       }
-      {editingCommentActive &&
+      {commentEditMode &&
       <>
           <Textarea
             placeholder='Write comment...'
-            value={newCommentText}
-            onChange={e => setNewCommentText(e.target.value)}
+            value={editedCommentContent.newCommentContent}
+            onChange={e => setEditedCommentContent({ ...editedCommentContent, newCommentContent: e.target.value})}
             onKeyPress={handleKeywordSaveEditingComment}
             autoFocus={true}
             onFocus={e => e.currentTarget.select()}
@@ -90,9 +108,4 @@ interface Props {
   columnId: number,
   cardId: number,
   commentId: number,
-  commentText: string,
-  commentAuthor: string,
-  userName: string,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

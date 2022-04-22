@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 export const CloseButton: React.FC<Props> = ({onClick}) => {
   return (
-    <StyledCloseButton onClick={onClick} />
+    <Button onClick={onClick} />
   );
 }
 
-const StyledCloseButton = styled.div`
+const Button = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;

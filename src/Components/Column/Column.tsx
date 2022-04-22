@@ -1,24 +1,24 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 import { Card } from '../Card';
 import { AddCardButton } from './AddCardButton';
 import { TextareaHead } from '../Textarea';
-import { CardType } from '../../interfaces';
+import { useDispatch, useSelector } from 'react-redux';
+import { editColumnName } from '../../store/column/columnSlice';
+import { getColumnCards, getColumnName } from '../../store/selectors';
+import { RootState } from '../../store/store';
 
 export const Column: React.FC<Props> = ({
   columnId,
-  name,
-  cards,
-  userName,
-  addCard,
-  deleteCard,
-  changeDescriptionCard,
-  addComment,
-  editComment,
-  deleteComment
 }) => {
-  const [columnName, setColumnName] = useState<string>(name);
+  const dispatch = useDispatch();
   const columnNameRef = useRef<HTMLTextAreaElement>(null)
+  const columnName = useSelector( (state: RootState) => getColumnName(state, columnId))
+  const cards = useSelector( (state: RootState) => getColumnCards(state, columnId))
+
+  const handleOnChangeColumnName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    dispatch(editColumnName({columnId, newColumnName: e.target.value}))
+  }
 
   const handleKeyPressBlurColumnName = (e: React.KeyboardEvent<HTMLTextAreaElement | null>) => {
     if (e.key === 'Enter') {
@@ -31,36 +31,26 @@ export const Column: React.FC<Props> = ({
     <StyledColumn>
       <TextareaHead
         value={columnName}
-        onChange={e => setColumnName(e.target.value)}
+        onChange={handleOnChangeColumnName}
         onKeyPress={handleKeyPressBlurColumnName}
         textareaRef={columnNameRef}
       >
-        {name}
+        {columnName}
       </TextareaHead>
 
-      {cards &&
+      {cards && cards.length !== 0 &&
         <CardList>
-          {cards.map(({id, name, description, comments}) => (
+          {cards.map(({id}) => (
             <Card
               key={id}
-              id={id}
+              cardId={id}
               columnId={columnId}
-              name={name}
-              description={description}
-              comments={comments}
-              colName={columnName}
-              userName={userName}
-              deleteCard={deleteCard}
-              changeDescriptionCard={changeDescriptionCard}
-              addComment={addComment}
-              editComment={editComment}
-              deleteComment={deleteComment}
             />
           ))}
         </CardList>
       }
 
-      <AddCardButton columnId={columnId} addCard={addCard} />
+      <AddCardButton columnId={columnId} />
     </StyledColumn>
   );
 }
@@ -111,13 +101,4 @@ const CardList = styled.div`
 
 interface Props {
   columnId: number,
-  name: string,
-  cards?: CardType[],
-  userName: string,
-  addCard: (columnId: number, cardName: string) => void,
-  deleteCard: (columnId: number, cardId: number) => void,
-  changeDescriptionCard: (columnId: number, cardId: number, descriptionCard: string) => void,
-  addComment: (columnId: number, cardId: number, commentText: string) => void,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

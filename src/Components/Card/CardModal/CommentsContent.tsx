@@ -1,42 +1,41 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CommentType } from '../../../interfaces';
+import { getCardComments } from '../../../store/selectors';
+import { RootState } from '../../../store/store';
 import { Comment } from './Comment'
 
-export const CommentsContent: React.FC<Props> = ({columnId, cardId, comments, userName, editComment, deleteComment}) => {
+export const CommentsContent: React.FC<Props> = ({columnId, cardId}) => {
+  const comments = useSelector( (state: RootState) => getCardComments(state, columnId, cardId))
+
   return (
     <>
     {comments &&
-      <StyledCommentsContent>
-        {comments.map(({id, author, content}) => (
-          <StyledComment key={id}>
+      <Content>
+        {comments.map(({id, author}) => (
+          <CommentWrapper key={id}>
             <Avatar title={author}>{author.charAt(0).toUpperCase()}</Avatar>
             <Comment
               columnId={columnId}
               cardId={cardId}
               commentId={id}
-              commentAuthor={author}
-              commentText={content}
-              userName={userName}
-              editComment={editComment}
-              deleteComment={deleteComment}
             />
-          </StyledComment>
+          </CommentWrapper>
         ))}
-      </StyledCommentsContent>
+      </Content>
     }
     </>
   );
 }
 
-const StyledCommentsContent = styled.div`
+const Content = styled.div`
   font-size: 14px;
   width: 100%;
   background-color: white;
   margin: 10px 0 0;
 `
 
-const StyledComment = styled.div`
+const CommentWrapper = styled.div`
   display: flex;
   padding: 10px 0;
 `
@@ -57,8 +56,4 @@ const Avatar = styled.div`
 interface Props {
   columnId: number,
   cardId: number,
-  comments?: CommentType[],
-  userName: string,
-  editComment: (columnId: number, cardId: number, commentId: number, newCommentText: string) => void,
-  deleteComment: (columnId: number, cardId: number, commentId: number) => void,
 }

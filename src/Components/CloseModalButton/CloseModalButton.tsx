@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 export const CloseModalButton: React.FC<Props> = ({onClick}) => {
   return (
-    <StyledCloseModalButton onClick={onClick} />
+    <Button onClick={onClick} />
   );
 }
 
-const StyledCloseModalButton = styled.div`
+const Button = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
